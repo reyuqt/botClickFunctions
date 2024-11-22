@@ -5,6 +5,7 @@ import pyautogui
 import logging
 
 from click_helper.box import Box
+
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -49,11 +50,11 @@ def retry(times: int, exceptions: tuple[type(Exception)] = (Exception,)):
 
 
 def locate_image(
-    image_path: str,
-    region: Optional[Box] = None,
-    confidence: float = 0.8,
-    min_confidence: float = 0.5,
-    retries: int = 3
+        image_path: str,
+        region: Optional[Box] = None,
+        confidence: float = 0.8,
+        min_confidence: float = 0.5,
+        retries: int = 3
 ) -> Box:
     """
     Locate an image on the screen using pyautogui with retries and confidence adjustment.
@@ -82,7 +83,7 @@ def locate_image(
 
         try:
             location = pyautogui.locateOnScreen(
-                image_path, region=search_region, confidence=current_confidence
+                image_path, region=search_region, confidence=current_confidence, grayscale=True
             )
             if location:
                 box = Box(location.left, location.top, location.width, location.height)
@@ -126,14 +127,14 @@ def click_at_coordinates(x: int, y: int, duration_range: Tuple[int, int] = (1, 3
 
 
 def click_image(
-    image_path: str,
-    region: Optional[Box] = None,
-    confidence: float = 0.8,
-    min_confidence: float = 0.5,
-    retries: int = 3,
-    x_reduction: float = 0.2,
-    y_reduction: float = 0.2,
-    duration_range: Tuple[float, float] = (1, 3)
+        image_path: str,
+        region: Optional[Box] = None,
+        confidence: float = 0.8,
+        min_confidence: float = 0.5,
+        retries: int = 3,
+        x_reduction: float = 0.2,
+        y_reduction: float = 0.2,
+        duration_range: Tuple[float, float] = (1, 3)
 ) -> bool:
     """
     Locate an image on the screen and click within it.
@@ -156,7 +157,8 @@ def click_image(
     """
     try:
         # Step 1: Locate the image on the screen
-        box = locate_image(image_path, region=region, confidence=confidence,min_confidence=min_confidence, retries=retries)
+        box = locate_image(image_path, region=region, confidence=confidence, min_confidence=min_confidence,
+                           retries=retries)
         logger.info(f"Located image at: {box}")
 
         # Step 2: Calculate random click coordinates within the Box

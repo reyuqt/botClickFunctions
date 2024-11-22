@@ -138,22 +138,6 @@ def click_image(
 ) -> bool:
     """
     Locate an image on the screen and click within it.
-    High level function that combines locate_image and click_at_coordinates
-
-    Args:
-        image_path (str): Path to the image to locate.
-        region (Optional[Box], optional): A region to search within (Box format). Defaults to None.
-        confidence (float, optional): Initial confidence level for matching (0.0 to 1.0). Defaults to 0.8.
-        retries (int, optional): Number of retry attempts. Defaults to 3.
-        x_reduction (float, optional): Proportion to reduce the width for clicking. Defaults to 0.2.
-        y_reduction (float, optional): Proportion to reduce the height for clicking. Defaults to 0.2.
-        duration_range (Tuple[float, float], optional): Range for the mouse movement duration. Defaults to (1, 3).
-
-    Returns:
-        bool: True if the image was successfully located and clicked, False otherwise.
-
-    Raises:
-        pyautogui.ImageNotFoundException: If the image cannot be located after retries.
     """
     try:
         # Step 1: Locate the image on the screen

@@ -2,11 +2,9 @@ import random
 from typing import Tuple, Optional, NamedTuple
 
 import pyautogui
-from pyautogui import click
 import logging
 
 from click_helper.box import Box
-# Configure logging
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -125,3 +123,53 @@ def click_at_coordinates(x: int, y: int, duration_range: Tuple[int, int] = (1, 3
     duration = random.uniform(*duration_range)
     pyautogui.click(x, y, tween=random.choice(MOUSE_MOVEMENTS), duration=duration)
     logger.info(f"Clicked at ({x}, {y}) with duration {duration:.2f}")
+
+
+def click_image(
+    image_path: str,
+    region: Optional[Box] = None,
+    confidence: float = 0.8,
+    min_confidence: float = 0.5,
+    retries: int = 3,
+    x_reduction: float = 0.2,
+    y_reduction: float = 0.2,
+    duration_range: Tuple[float, float] = (1, 3)
+) -> bool:
+    """
+    Locate an image on the screen and click within it.
+    High level function that combines locate_image and click_at_coordinates
+
+    Args:
+        image_path (str): Path to the image to locate.
+        region (Optional[Box], optional): A region to search within (Box format). Defaults to None.
+        confidence (float, optional): Initial confidence level for matching (0.0 to 1.0). Defaults to 0.8.
+        retries (int, optional): Number of retry attempts. Defaults to 3.
+        x_reduction (float, optional): Proportion to reduce the width for clicking. Defaults to 0.2.
+        y_reduction (float, optional): Proportion to reduce the height for clicking. Defaults to 0.2.
+        duration_range (Tuple[float, float], optional): Range for the mouse movement duration. Defaults to (1, 3).
+
+    Returns:
+        bool: True if the image was successfully located and clicked, False otherwise.
+
+    Raises:
+        pyautogui.ImageNotFoundException: If the image cannot be located after retries.
+    """
+    try:
+        # Step 1: Locate the image on the screen
+        box = locate_image(image_path, region=region, confidence=confidence,min_confidence=min_confidence, retries=retries)
+        logger.info(f"Located image at: {box}")
+
+        # Step 2: Calculate random click coordinates within the Box
+        x, y = box.calculate_click_coordinates(x_reduction=x_reduction, y_reduction=y_reduction)
+        logger.info(f"Calculated click coordinates: ({x}, {y})")
+
+        # Step 3: Perform the click
+        duration = random.uniform(*duration_range)
+        pyautogui.click(x, y, tween=random.choice(MOUSE_MOVEMENTS), duration=duration)
+        logger.info(f"Clicked on image at ({x}, {y}) with duration {duration:.2f} seconds")
+
+        return True
+
+    except pyautogui.ImageNotFoundException as e:
+        logger.error(f"Image '{image_path}' not found: {e}")
+        return False

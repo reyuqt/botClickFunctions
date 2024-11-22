@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test HTML Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+
+        .nested {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .nested .nested {
+            border-color: #aaa;
+            background-color: #f9f9f9;
+        }
+
+        .test-button {
+            margin: 5px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+
+        .input-field {
+            margin: 5px 0;
+        }
+
+        .input-field input {
+            padding: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+<script>
+    document.addEventListener('click', function (event) {
+        window.lastClickedElement = event.target.id || 'No ID';
+    });
+    document.addEventListener('focus', function (event) {
+        window.lastClickedElement = event.target.id || 'No ID';
+    });
+</script>
+<h1>Test HTML Page</h1>
+<p>Use this page to test buttons, input fields, and nested elements.</p>
+
+<!-- Buttons -->
+<div>
+    <h2>Test Buttons</h2>
+    <button id="test-button-1" class="test-button">Button 1</button>
+    <button id="test-button-2" class="test-button">Button 2</button>
+    <button id="test-button-3" class="test-button">Button 3</button>
+</div>
+
+<!-- Input Fields -->
+<div>
+    <h2>Input Fields</h2>
+    <div class="input-field">
+        <label for="text-input">Text Input:</label>
+        <input type="text" id="text-input" placeholder="Enter text here">
+    </div>
+    <div class="input-field">
+        <label for="password-input">Password Input:</label>
+        <input type="password" id="password-input" placeholder="Enter password">
+    </div>
+    <div class="input-field">
+        <label for="number-input">Number Input:</label>
+        <input type="number" id="number-input" placeholder="Enter a number">
+    </div>
+</div>
+
+<!-- Nested Fields -->
+<div>
+    <h2>Nested Fields</h2>
+    <div class="nested">
+        <p>Level 1</p>
+        <button class="test-button" onclick="alert('Level 1 Button Clicked')">Level 1 Button</button>
+        <div class="nested">
+            <p>Level 2</p>
+            <input type="text" placeholder="Level 2 Input">
+            <div class="nested">
+                <p>Level 3</p>
+                <button class="test-button" onclick="alert('Level 3 Button Clicked')">Level 3 Button</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

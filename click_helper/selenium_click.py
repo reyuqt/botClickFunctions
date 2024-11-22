@@ -34,12 +34,14 @@ def save_element(element: WebElement, name: Optional[str] = None) -> str:
     if name is not None:
         filepath = f'{os.getcwd()}/{name}.png'
         saved = element.screenshot(filepath)
+        time.sleep(0.5)  # Allow rendering to stabilize
         if saved:
             logger.info(f"Saved element to filepath: {filepath}")
             return filepath
     with tempfile.NamedTemporaryFile(suffix=".png", dir='.', delete=False, delete_on_close=False) as temp_file:
         temp_file_path = temp_file.name
         element.screenshot(temp_file_path)
+        time.sleep(0.5)  # Allow rendering to stabilize
         logger.info(f"Saved element as temporary image: {temp_file_path}")
 
     if not os.path.exists(temp_file_path) or not os.path.getsize(temp_file_path):
@@ -60,14 +62,15 @@ def click_this_element(
     Locate an element, save it as a temporary image, and click it using our utility function.
     """
     try:
-        # Step 1: Locate the Selenium element
         element = get_element(driver, selector)
         logger.info(f"Located Selenium element: {selector}")
 
-        temp_file_path = save_element(element)
-        # Step 4: Click the saved image
+        file_path = save_element(element, 'element_1')
+
+
+
         success = click_image(
-            image_path=temp_file_path,
+            image_path=file_path,
             confidence=confidence,
             retries=retries,
             x_reduction=x_reduction,
@@ -76,8 +79,8 @@ def click_this_element(
         )
 
         # Step 5: Clean up the temporary file
-        os.remove(temp_file_path)
-        logger.info(f"Temporary image file '{temp_file_path}' deleted.")
+        os.remove(file_path)
+        logger.info(f"Temporary image file '{file_path}' deleted.")
 
         return success
 

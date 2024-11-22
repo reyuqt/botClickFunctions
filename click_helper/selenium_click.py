@@ -29,6 +29,24 @@ def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement])
     return selector
 
 
+def save_element(element: WebElement, name: Optional[str] = None) -> str:
+    # Step 2: Save the element as a temporary image file
+    if name is not None:
+        filepath = f'{os.getcwd()}/{name}.png'
+        saved = element.screenshot(filepath)
+        if saved:
+            logger.info(f"Saved element to filepath: {filepath}")
+            return filepath
+    with tempfile.NamedTemporaryFile(suffix=".png", dir='.', delete=False, delete_on_close=False) as temp_file:
+        temp_file_path = temp_file.name
+        element.screenshot(temp_file_path)
+        logger.info(f"Saved element as temporary image: {temp_file_path}")
+
+    if not os.path.exists(temp_file_path) or not os.path.getsize(temp_file_path):
+        raise Exception(f"Failed to save element screenshot: {temp_file_path}")
+    return temp_file_path
+
+
 def click_this_element(
         driver: Optional[WebDriver],
         selector: Union[tuple[str, str], WebElement],
@@ -40,37 +58,13 @@ def click_this_element(
 ) -> bool:
     """
     Locate an element, save it as a temporary image, and click it using our utility function.
-
-    Args:
-        driver (Optional[WebDriver]): The Selenium WebDriver instance, only required if selector is a tuple
-        selector (Union[tuple[str, str], WebElement]): A tuple selector pair or a WebElement.
-        confidence (float, optional): Initial confidence level for image matching. Defaults to 0.8.
-        retries (int, optional): Number of retry attempts for locating the image. Defaults to 3.
-        x_reduction (float, optional): Proportion to reduce the width for clicking. Defaults to 0.2.
-        y_reduction (float, optional): Proportion to reduce the height for clicking. Defaults to 0.2.
-        duration_range (Tuple[float, float], optional): Range for mouse movement duration. Defaults to (1, 3).
-
-    Returns:
-        bool: True if the image was successfully located and clicked, False otherwise.
-
-    Raises:
-        Exception: If the element cannot be located or saved as an image.
     """
     try:
         # Step 1: Locate the Selenium element
         element = get_element(driver, selector)
         logger.info(f"Located Selenium element: {selector}")
 
-        # Step 2: Save the element as a temporary image file
-        with tempfile.NamedTemporaryFile(suffix=".png",dir='.', delete=False) as temp_file:
-            temp_file_path = temp_file.name
-            element.screenshot(temp_file_path)
-            logger.info(f"Saved element '{selector}' as temporary image: {temp_file_path}")
-
-        # Step 3: Validate the saved image
-        if not os.path.exists(temp_file_path) or not os.path.getsize(temp_file_path):
-            raise Exception(f"Failed to save element screenshot: {temp_file_path}")
-
+        temp_file_path = save_element(element)
         # Step 4: Click the saved image
         success = click_image(
             image_path=temp_file_path,

@@ -113,20 +113,6 @@ def locate_image(
     raise pyautogui.ImageNotFoundException(f"Image '{image_path}' not found")
 
 
-def calculate_click_coordinates(location: Box):
-    """
-    Calculate random coordinates within a given bounding box.
-    """
-    logger.debug(f"Calculating click coordinates for location: {location}")
-    x1 = round(location.left + location.width * 0.2)
-    y1 = round(location.top + location.height * 0.2)
-    x2 = round(location.left + location.width * 0.8)
-    y2 = round(location.top + location.height * 0.8)
-    coords = (random.randint(x1, x2), random.randint(y1, y2))
-    logger.debug(f"Calculated coordinates: {coords}")
-    return coords
-
-
 def click_at_coordinates(x: int, y: int, duration_range: Tuple[int, int] = (1, 3)):
     """
     Click at specified coordinates with human-like movement.

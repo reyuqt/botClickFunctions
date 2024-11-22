@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 import logging
 
-from .utils import click_image
+from click_helper.utils import click_image
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -18,21 +18,20 @@ logger = logging.getLogger("click_helper")
 MAX_ATTEMPTS = 3
 
 
-def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement], name: str) -> WebElement:
+def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement]) -> WebElement:
     """
     Helper function to resolve a WebElement or locate it using a selector tuple.
     """
     if isinstance(selector, tuple):
-        logger.debug(f'[{name}] Resolving selector tuple: {selector}')
+        logger.debug(f'Resolving selector tuple: {selector}')
         return driver.find_element(*selector)
-    logger.debug(f'[{name}] Selector is already a WebElement')
+    logger.debug(f'Selector is already a WebElement')
     return selector
 
 
 def click_this_element(
         driver: Optional[WebDriver],
         selector: Union[tuple[str, str], WebElement],
-        name: str,
         confidence: float = 0.8,
         retries: int = 3,
         x_reduction: float = 0.2,
@@ -45,7 +44,6 @@ def click_this_element(
     Args:
         driver (Optional[WebDriver]): The Selenium WebDriver instance, only required if selector is a tuple
         selector (Union[tuple[str, str], WebElement]): A tuple selector pair or a WebElement.
-        name (str): A descriptive name for the element (used in logs).
         confidence (float, optional): Initial confidence level for image matching. Defaults to 0.8.
         retries (int, optional): Number of retry attempts for locating the image. Defaults to 3.
         x_reduction (float, optional): Proportion to reduce the width for clicking. Defaults to 0.2.
@@ -60,14 +58,14 @@ def click_this_element(
     """
     try:
         # Step 1: Locate the Selenium element
-        element = get_element(driver, selector, name)
-        logger.info(f"Located Selenium element: {name}")
+        element = get_element(driver, selector)
+        logger.info(f"Located Selenium element: {selector}")
 
         # Step 2: Save the element as a temporary image file
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+        with tempfile.NamedTemporaryFile(suffix=".png",dir='.', delete=False) as temp_file:
             temp_file_path = temp_file.name
             element.screenshot(temp_file_path)
-            logger.info(f"Saved element '{name}' as temporary image: {temp_file_path}")
+            logger.info(f"Saved element '{selector}' as temporary image: {temp_file_path}")
 
         # Step 3: Validate the saved image
         if not os.path.exists(temp_file_path) or not os.path.getsize(temp_file_path):
@@ -90,5 +88,5 @@ def click_this_element(
         return success
 
     except Exception as e:
-        logger.exception(f"Error in clicking element '{name}': {e}")
+        logger.exception(f"Error in clicking element '{selector}': {e}")
         return False

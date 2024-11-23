@@ -20,6 +20,8 @@ def driver():
     save_element(driver.find_element(By.ID, 'test-input'), name='test_input')
     yield driver
     driver.quit()
+    os.remove('test_button.png')
+    os.remove('test_input.png')
 
 
 @pytest.fixture
@@ -37,9 +39,9 @@ def test_locate_image(driver, button_box, input_box):
     assert driver_location['height'] == button_box.height
     assert driver_location['width'] == button_box.width
 
-    '''driver_location = driver.find_element(By.ID, 'test-input').size
+    driver_location = driver.find_element(By.ID, 'test-input').size
     assert driver_location['height'] == input_box.height
-    assert driver_location['width'] == input_box.width'''
+    assert driver_location['width'] == input_box.width
 
 
 def test_click_at_coordinates(driver, button_box, input_box):
@@ -48,10 +50,10 @@ def test_click_at_coordinates(driver, button_box, input_box):
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-button-1'
 
-    '''x, y = input_box.center()
+    x, y = input_box.center()
     click_at_coordinates(x=x, y=y, duration_range=(1, 5))
     last_clicked = driver.execute_script("return window.lastClickedElement;")
-    assert last_clicked == 'test-input'''
+    assert last_clicked == 'test-input
 
 
 def test_click_image(driver):

@@ -9,7 +9,8 @@ from selenium.webdriver.remote.webelement import WebElement
 from click_helper.mouse import click_image
 from click_helper.utils import get_logger
 
-logger = get_logger("selenium_click")
+logger = get_logger(__name__)
+
 
 def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement]) -> WebElement:
     """
@@ -22,7 +23,7 @@ def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement])
     return selector
 
 
-def save_element(element: WebElement, name: Optional[str] = None) -> str:
+def save_element(element: WebElement, name: Optional[str] = None, delete_on_close: bool = True) -> str:
     # Step 2: Save the element as a temporary image file
     if name is not None:
         filepath = f'{os.getcwd()}/{name}.png'
@@ -31,7 +32,8 @@ def save_element(element: WebElement, name: Optional[str] = None) -> str:
         if saved:
             logger.info(f"Saved element to filepath: {filepath}")
             return filepath
-    with tempfile.NamedTemporaryFile(suffix=".png", dir='.', delete=False, delete_on_close=False) as temp_file:
+    with tempfile.NamedTemporaryFile(suffix=".png", dir='.', delete=delete_on_close,
+                                     delete_on_close=delete_on_close) as temp_file:
         temp_file_path = temp_file.name
         element.screenshot(temp_file_path)
         time.sleep(0.5)  # Allow rendering to stabilize
@@ -59,8 +61,6 @@ def click_this_element(
         logger.info(f"Located Selenium element: {selector}")
 
         file_path = save_element(element, 'element_1')
-
-
 
         success = click_image(
             image_path=file_path,

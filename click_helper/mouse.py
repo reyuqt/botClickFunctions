@@ -1,19 +1,18 @@
 import pyautogui
 import time
 import random
-import logging
 from typing import Tuple, List, Optional
 
 from click_helper.box import Box
+from click_helper.utils import get_logger
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger(__name__)
+logger = get_logger("mouse")
 
 pyautogui.MINIMUM_DURATION = 0
 pyautogui.MINIMUM_SLEEP = 0
 pyautogui.PAUSE = 0
 pyautogui.FAILSAFE = False
+
 
 def generate_cubic_bezier_curve(
         p0: Tuple[int, int],
@@ -104,7 +103,7 @@ def click_with_bezier(
     except Exception as e:
         logger.error(f"An error occurred during the Bezier mouse movement: {e}", exc_info=True)
 
-
+# @TODO I don't feel like this really fits here, but keep it here for now
 def locate_image(
         image_path: str,
         region: Optional[Box] = None,
@@ -168,7 +167,8 @@ def locate_image(
     raise pyautogui.ImageNotFoundException(f"Image '{image_path}' not found")
 
 
-def click_at_coordinates(x: int, y: int, duration_range: Tuple[int, int] = (1, 3), steps_range: Tuple[int, int] = (150,300)):
+def click_at_coordinates(x: int, y: int, duration_range: Tuple[int, int] = (1, 3),
+                         steps_range: Tuple[int, int] = (150, 300)):
     """
     Click at specified coordinates with human-like movement.
 
@@ -193,7 +193,7 @@ def click_image(
         x_reduction: float = 0.2,
         y_reduction: float = 0.2,
         duration_range: Tuple[float, float] = (1, 3),
- steps_range: Tuple[int, int] = (150,300)
+        steps_range: Tuple[int, int] = (150, 300)
 ) -> bool:
     """
     Locate an image on the screen and click within it.
@@ -211,7 +211,7 @@ def click_image(
         # Step 3: Perform the click
         duration = random.uniform(*duration_range)
         steps = int(random.uniform(*steps_range))
-        click_with_bezier((x,y),duration=duration, steps=steps)
+        click_with_bezier((x, y), duration=duration, steps=steps)
         logger.info(f"Clicked on image at ({x}, {y}) with duration {duration:.2f} seconds")
 
         return True

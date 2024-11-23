@@ -6,9 +6,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import os
 
-from click_helper.box import Box
-from click_helper.mouse import click_image, click_at_coordinates, locate_image
-from click_helper.selenium_click import save_element
+from webdriver_click_functions.box import Box
+from webdriver_click_functions.mouse import click_image, click_at_coordinates, locate_image
+from webdriver_click_functions.selenium_click import save_element
 
 
 @pytest.fixture(scope="module")
@@ -46,14 +46,14 @@ def test_locate_image(driver, button_box, input_box):
 
 def test_click_at_coordinates(driver, button_box, input_box):
     x, y = button_box.center()
-    click_at_coordinates(x=x, y=y, duration_range=(1, 5))
+    click_at_coordinates(x=x, y=y, duration_range=(1, 3), steps_range=(200,300))
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-button-1'
 
     x, y = input_box.center()
-    click_at_coordinates(x=x, y=y, duration_range=(1, 5))
+    click_at_coordinates(x=x, y=y, duration_range=(1, 3), steps_range=(200,300))
     last_clicked = driver.execute_script("return window.lastClickedElement;")
-    assert last_clicked == 'test-input
+    assert last_clicked == 'test-input'
 
 
 def test_click_image(driver):

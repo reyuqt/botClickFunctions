@@ -6,8 +6,8 @@ from typing import Union, Tuple, Optional
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
-from click_helper.mouse import click_image
-from click_helper.utils import get_logger
+from webdriver_click_functions.mouse import click_image
+from webdriver_click_functions.utils import get_logger
 
 logger = get_logger(__name__)
 

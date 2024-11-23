@@ -3,8 +3,8 @@ import time
 import random
 from typing import Tuple, List, Optional
 
-from click_helper.box import Box
-from click_helper.utils import get_logger
+from webdriver_click_functions.box import Box
+from webdriver_click_functions.utils import get_logger
 
 logger = get_logger("mouse")
 

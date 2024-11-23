@@ -1,6 +1,6 @@
 import random
 from typing import Tuple, NamedTuple
-from click_helper.utils import get_logger
+from webdriver_click_functions.utils import get_logger
 
 logger = get_logger("box")
 

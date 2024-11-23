@@ -5,7 +5,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import os
-from click_helper.selenium_click import get_element, click_this_element, save_element
+from webdriver_click_functions.selenium_click import get_element, click_this_element, save_element
 
 
 @pytest.fixture(scope="module")

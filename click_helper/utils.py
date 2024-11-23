@@ -1,39 +1,37 @@
-import random
-from typing import Tuple, Optional, NamedTuple
-
-import pyautogui
 import logging
+import os
 
-from click_helper.box import Box
+def get_logger(name=__name__, log_level=logging.INFO, log_file=None):
+    # Create a logger
+    logger = logging.getLogger(name)
+    logger.setLevel(log_level)
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger("click_helper")
+    # Avoid duplicate handlers if logger is already set up
+    if logger.hasHandlers():
+        return logger
 
-MOUSE_MOVEMENTS = [
-    pyautogui.easeInQuad,
-    pyautogui.easeOutQuad,
-    pyautogui.easeInOutQuad,
-    pyautogui.easeInOutSine,
-    pyautogui.easeInQuint,
-]
-pyautogui.MINIMUM_DURATION = 0
-pyautogui.MINIMUM_SLEEP = 0
-pyautogui.PAUSE = 0
-pyautogui.FAILSAFE = False
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # File handler (optional)
+    if log_file:
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)  # Create directory if it doesn't exist
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+    return logger
+
+logger = get_logger("click_helper")
 
 def retry(times: int, exceptions: tuple[type(Exception)] = (Exception,)):
     """
     Retry decorator for functions that might fail.
-
-    Args:
-        times (int): Number of retries.
-        exceptions (tuple): Exceptions to catch and retry.
-
-    Returns:
-        Decorated function with retry logic.
     """
 
     def decorator(func):

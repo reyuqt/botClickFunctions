@@ -1,22 +1,15 @@
 import time
 import os
 import tempfile
-from typing import Union, Callable, Tuple, Optional
+from typing import Union, Tuple, Optional
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
-import logging
 
 from click_helper.mouse import click_image
+from click_helper.utils import get_logger
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger("click_helper")
-
-MAX_ATTEMPTS = 3
-
+logger = get_logger("selenium_click")
 
 def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement]) -> WebElement:
     """

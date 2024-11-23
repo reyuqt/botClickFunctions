@@ -176,6 +176,7 @@ def click_at_coordinates(x: int, y: int, duration_range: Tuple[int, int] = (1, 3
         x (int): X-coordinate.
         y (int): Y-coordinate.
         duration_range (tuple): Range for click duration (optional).
+        steps_range (tuple): Range for steps amount (optional).
     """
     duration = random.uniform(*duration_range)
     steps = int(random.uniform(*steps_range))

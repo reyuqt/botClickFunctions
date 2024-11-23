@@ -12,6 +12,10 @@ from webdriver_click_functions.utils import get_logger
 logger = get_logger(__name__)
 
 
+def outline_element(driver: WebDriver, selector: Union[tuple[str, str]]):
+    pass
+
+
 def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement]) -> WebElement:
     """
     Helper function to resolve a WebElement or locate it using a selector tuple.
@@ -52,6 +56,7 @@ def click_this_element(
         x_reduction: float = 0.2,
         y_reduction: float = 0.2,
         duration_range: Tuple[float, float] = (1, 3),
+        steps_range: Tuple[int, int] = (150, 300),
 ) -> bool:
     """
     Locate an element, save it as a temporary image, and click it using our utility function.
@@ -69,6 +74,7 @@ def click_this_element(
             x_reduction=x_reduction,
             y_reduction=y_reduction,
             duration_range=duration_range,
+            steps_range=steps_range
         )
 
         # Step 5: Clean up the temporary file
@@ -80,3 +86,13 @@ def click_this_element(
     except Exception as e:
         logger.exception(f"Error in clicking element '{selector}': {e}")
         return False
+
+
+def click_inside_element(driver: Optional[WebDriver],
+                         outer_selector: Union[tuple[str, str], WebElement],
+                         inner_selector: Union[tuple[str, str], WebElement], confidence: float = 0.8,
+                         retries: int = 3,
+                         x_reduction: float = 0.2,
+                         y_reduction: float = 0.2,
+                         duration_range: Tuple[float, float] = (1, 3), ):
+    pass

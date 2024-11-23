@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 import logging
 
-from click_helper.utils import click_image
+from click_helper.mouse import click_image
 
 logging.basicConfig(
     level=logging.DEBUG,

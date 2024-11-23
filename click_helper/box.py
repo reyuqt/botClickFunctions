@@ -1,12 +1,8 @@
 import random
 from typing import Tuple, NamedTuple
-import logging
+from click_helper.utils import get_logger
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger("box")
+logger = get_logger("box")
 
 class Box(NamedTuple):
     left: int

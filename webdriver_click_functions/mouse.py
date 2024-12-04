@@ -114,7 +114,7 @@ def click_with_bezier(
         logger.error(f"An error occurred during the Bezier mouse movement: {e}", exc_info=True)
 
 
-def click_at_coordinates(target: Tuple[int, int], duration_range: Tuple[int, int] = (1, 3)):
+def click_at_coordinates(target: Tuple[int, int], duration: float = 1):
     """
     Click at specified coordinates with human-like movement.
 
@@ -124,10 +124,9 @@ def click_at_coordinates(target: Tuple[int, int], duration_range: Tuple[int, int
         steps_range (tuple): Range for steps amount (optional).
     """
     x,y = target
-    duration = random.uniform(*duration_range)
     pyautogui.click(x, y, logScreenshot=False,
                     tween=random.choice(MOUSE_MOVEMENTS),
-                    duration=round(random.uniform(1, 3), 2))
+                    duration=duration)
     logger.info(f"Clicked at ({x}, {y}) with duration {duration:.2f}")
 
 
@@ -162,7 +161,7 @@ def click_image(
         if bezier:
             click_with_bezier((x, y), duration=duration, steps=steps)
         else:
-            click_at_coordinates(x)
+            click_at_coordinates(x, duration=duration)
         logger.info(f"Clicked on image at ({x}, {y}) with duration {duration:.2f} seconds")
 
         return True

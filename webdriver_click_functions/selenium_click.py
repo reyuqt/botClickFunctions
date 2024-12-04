@@ -1,6 +1,6 @@
-import time
 import os
 import tempfile
+import time
 from typing import Union, Tuple, Optional
 
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -12,8 +12,18 @@ from webdriver_click_functions.utils import get_logger
 logger = get_logger(__name__)
 
 
-def outline_element(driver: WebDriver, selector: Union[tuple[str, str]]):
-    pass
+def outline_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement], border_color: str = 'red',
+                    border_width: str = '2px'):
+    """ adds a border to an element, I found this super useful when locating elements that were just text (think radio options),
+    but this introduces possibly being detected by dom observations """
+    if isinstance(selector, tuple):
+        logger.debug(f'Resolving selector tuple: {selector}')
+        element = driver.find_element(*selector)
+    else:
+        element = selector
+    driver.execute_script(
+        f"arguments[0].style.border='{border_width} solid {border_color}';", element
+    )
 
 
 def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement]) -> WebElement:
@@ -25,6 +35,7 @@ def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement])
         return driver.find_element(*selector)
     logger.debug(f'Selector is already a WebElement')
     return selector
+
 
 def save_element(element: WebElement, name: Optional[str] = None, delete_on_close: bool = True) -> str:
     """
@@ -62,6 +73,7 @@ def save_element(element: WebElement, name: Optional[str] = None, delete_on_clos
             raise Exception(f"Failed to save element screenshot: {temp_file_path}")
 
         return temp_file_path
+
 
 def click_this_element(
         driver: Optional[WebDriver],

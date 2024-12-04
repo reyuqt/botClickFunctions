@@ -5,7 +5,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import os
-from webdriver_click_functions.selenium_click import get_element, click_this_element, save_element
+from webdriver_click_functions.selenium_click import get_element, click_this_element, save_element, click_inside_this_element
 
 
 @pytest.fixture(scope="module")
@@ -41,3 +41,13 @@ def test_click_this_element(driver):
 
         assert clicked
         assert last_clicked == selector[1]
+
+
+def test_click_inside_this_element(driver):
+    selector_inner = (By.ID, 'test-button-nested-1')
+    selector_outer = (By.ID, 'nest-1')
+    clicked = click_inside_this_element(driver=driver, selector_outer=selector_outer, selector_inner=selector_inner)
+    last_clicked = driver.execute_script("return window.lastClickedElement;")
+
+    assert clicked
+    assert last_clicked == selector_inner

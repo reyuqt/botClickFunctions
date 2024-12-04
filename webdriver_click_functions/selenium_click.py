@@ -37,7 +37,7 @@ def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement])
     return selector
 
 
-def save_element(element: WebElement, name: Optional[str] = None, delete_on_close: bool = True) -> str:
+def save_element(element: WebElement, name: Optional[str] = None) -> str:
     """
     Save a screenshot of a WebElement.
 
@@ -62,7 +62,7 @@ def save_element(element: WebElement, name: Optional[str] = None, delete_on_clos
             return filepath
 
     # Use a temporary file to save the screenshot if no name is provided
-    with tempfile.NamedTemporaryFile(suffix=".png", dir='.', delete=delete_on_close) as temp_file:
+    with tempfile.NamedTemporaryFile(suffix=".png", dir='.', delete=False, delete_on_close=False) as temp_file:
         temp_file_path = temp_file.name
         element.screenshot(temp_file_path)
         time.sleep(0.5)  # Allow rendering to stabilize

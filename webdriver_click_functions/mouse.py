@@ -85,12 +85,12 @@ def click_with_bezier(
 
         # Randomly generate two control points for the curve
         control1 = (
-            random.randint(min(start.x, target[0]), max(start.x, target[0])),
-            random.randint(min(start.y, target[1]), max(start.y, target[1]) - 100),
+            random.randint(round(min(start.x, target[0])), round(max(start.x, target[0]))),
+            random.randint(round(min(start.y, target[1])), round(max(start.y, target[1]) - 100)),
         )
         control2 = (
-            random.randint(min(start.x, target[0]), max(start.x, target[0])),
-            random.randint(min(start.y, target[1]) + 100, max(start.y, target[1])),
+            random.randint(round(min(start.x, target[0])), round(max(start.x, target[0]))),
+            random.randint(round(min(start.y, target[1]) + 100), round(max(start.y, target[1]))),
         )
         logger.info(f"Generated control points: control1={control1}, control2={control2}")
 

@@ -14,6 +14,15 @@ pyautogui.MINIMUM_SLEEP = 0
 pyautogui.PAUSE = 0
 pyautogui.FAILSAFE = False
 
+MOUSE_MOVEMENTS = [
+    pyautogui.easeInQuad,
+    pyautogui.easeOutQuad,
+    pyautogui.easeInOutQuad,
+    pyautogui.easeInOutSine,
+    pyautogui.easeInQuint,
+    pyautogui.easeInElastic,
+    pyautogui.easeInBounce,
+]
 
 def generate_cubic_bezier_curve(
         p0: Tuple[int, int],
@@ -105,20 +114,20 @@ def click_with_bezier(
         logger.error(f"An error occurred during the Bezier mouse movement: {e}", exc_info=True)
 
 
-def click_at_coordinates(x: int, y: int, duration_range: Tuple[int, int] = (1, 3),
-                         steps_range: Tuple[int, int] = (150, 300)):
+def click_at_coordinates(target: Tuple[int, int], duration_range: Tuple[int, int] = (1, 3)):
     """
     Click at specified coordinates with human-like movement.
 
     Args:
-        x (int): X-coordinate.
-        y (int): Y-coordinate.
+        target: Tuple of (x, y) specifying the target coordinates.
         duration_range (tuple): Range for click duration (optional).
         steps_range (tuple): Range for steps amount (optional).
     """
+    x,y = target
     duration = random.uniform(*duration_range)
-    steps = int(random.uniform(*steps_range))
-    click_with_bezier((x, y), duration=duration, steps=steps)
+    pyautogui.click(x, y, logScreenshot=False,
+                    tween=random.choice(MOUSE_MOVEMENTS),
+                    duration=round(random.uniform(1, 3), 2))
     logger.info(f"Clicked at ({x}, {y}) with duration {duration:.2f}")
 
 
@@ -131,7 +140,8 @@ def click_image(
         x_reduction: float = 0.2,
         y_reduction: float = 0.2,
         duration_range: Tuple[float, float] = (1, 3),
-        steps_range: Tuple[int, int] = (150, 300)
+        steps_range: Tuple[int, int] = (150, 300),
+        bezier: bool = True
 ) -> bool:
     """
     Locate an image on the screen and click within it.
@@ -149,7 +159,10 @@ def click_image(
         # Step 3: Perform the click
         duration = random.uniform(*duration_range)
         steps = int(random.uniform(*steps_range))
-        click_with_bezier((x, y), duration=duration, steps=steps)
+        if bezier:
+            click_with_bezier((x, y), duration=duration, steps=steps)
+        else:
+            click_at_coordinates(x)
         logger.info(f"Clicked on image at ({x}, {y}) with duration {duration:.2f} seconds")
 
         return True

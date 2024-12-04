@@ -15,7 +15,7 @@ logger = get_logger(__name__)
 def outline_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement], border_color: str = 'red',
                     border_width: str = '2px'):
     """ adds a border to an element, I found this super useful when locating elements that were just text (think radio options),
-    but this introduces possibly being detected by dom observations """
+    but this introduces possibly being detected by dom observations ( akamai cloudflare )"""
     if isinstance(selector, tuple):
         logger.debug(f'Resolving selector tuple: {selector}')
         element = driver.find_element(*selector)
@@ -114,7 +114,7 @@ def click_this_element(
         return False
 
 
-def click_inside_element(driver: Optional[WebDriver],
+def click_inside_this_element(driver: Optional[WebDriver],
                          outer_selector: Union[tuple[str, str], WebElement],
                          inner_selector: Union[tuple[str, str], WebElement], confidence: float = 0.8,
                          retries: int = 3,

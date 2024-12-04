@@ -8,6 +8,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from webdriver_click_functions.mouse import click_image
 from webdriver_click_functions.utils import get_logger
+from webdriver_click_functions.screen import locate_image
 
 logger = get_logger(__name__)
 
@@ -115,10 +116,48 @@ def click_this_element(
 
 
 def click_inside_this_element(driver: Optional[WebDriver],
-                         outer_selector: Union[tuple[str, str], WebElement],
-                         inner_selector: Union[tuple[str, str], WebElement], confidence: float = 0.8,
-                         retries: int = 3,
-                         x_reduction: float = 0.2,
-                         y_reduction: float = 0.2,
-                         duration_range: Tuple[float, float] = (1, 3), ):
-    pass
+                              selector_outer: Union[tuple[str, str], WebElement],
+                              selector_inner: Union[tuple[str, str], WebElement],
+                              confidence: float = 0.8,
+                              retries: int = 3,
+                              x_reduction: float = 0.2,
+                              y_reduction: float = 0.2,
+                              duration_range: Tuple[float, float] = (1, 3),
+                              steps_range: Tuple[int, int] = (150, 300)):
+    """
+    Locate an outer_element, then locate an element inside of outer_element and click it using our mouse function.
+    """
+    try:
+        outer_element = get_element(driver, selector_outer)
+        inner_element = get_element(driver, selector_inner)
+        logger.info(f"Located Outer Selenium element: {selector_outer}")
+        if outer_element.find_element(*selector_inner) is None:
+            logger.critical(f'{selector_inner} not found inside {selector_outer}')
+            return False
+        outer_element_file_path = save_element(outer_element, 'element_1')
+        outer_element_location = locate_image(outer_element_file_path)
+        inner_element_file_path = save_element(inner_element, 'element_2')
+
+        success = click_image(
+            image_path=inner_element_file_path,
+            region=outer_element_location,
+            confidence=confidence,
+            retries=retries,
+            x_reduction=x_reduction,
+            y_reduction=y_reduction,
+            duration_range=duration_range,
+            steps_range=steps_range
+        )
+
+        os.remove(outer_element_file_path)
+        logger.info(f"Temporary image file '{outer_element_file_path}' deleted.")
+        os.remove(inner_element_file_path)
+        logger.info(f"Temporary image file '{inner_element_file_path}' deleted.")
+
+
+        return success
+
+    except Exception as e:
+        logger.exception(f"Error in clicking element '{selector_inner}' inside '{selector_outer}': {e}")
+        return False
+

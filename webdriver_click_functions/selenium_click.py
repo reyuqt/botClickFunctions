@@ -26,27 +26,42 @@ def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement])
     logger.debug(f'Selector is already a WebElement')
     return selector
 
-
 def save_element(element: WebElement, name: Optional[str] = None, delete_on_close: bool = True) -> str:
-    # Step 2: Save the element as a temporary image file
+    """
+    Save a screenshot of a WebElement.
+
+    Parameters:
+    element (WebElement): The web element to capture.
+    name (Optional[str]): The name of the file to save the screenshot. If not provided, a temporary file will be used.
+    delete_on_close (bool): If True, the temporary file will be deleted on close. Default is True.
+
+    Returns:
+    str: The full path of the saved screenshot.
+
+    Raises:
+    Exception: If the screenshot could not be saved.
+    """
+    # If a name is provided, save the screenshot with the specific name
     if name is not None:
-        filepath = f'{os.getcwd()}/{name}.png'
+        filepath = os.path.join(os.getcwd(), f'{name}.png')
         saved = element.screenshot(filepath)
         time.sleep(0.5)  # Allow rendering to stabilize
         if saved:
-            logger.info(f"Saved element to filepath: {filepath}")
+            logger.info("Saved element to filepath: %s", filepath)
             return filepath
-    with tempfile.NamedTemporaryFile(suffix=".png", dir='.', delete=delete_on_close,
-                                     delete_on_close=delete_on_close) as temp_file:
+
+    # Use a temporary file to save the screenshot if no name is provided
+    with tempfile.NamedTemporaryFile(suffix=".png", dir='.', delete=delete_on_close) as temp_file:
         temp_file_path = temp_file.name
         element.screenshot(temp_file_path)
         time.sleep(0.5)  # Allow rendering to stabilize
-        logger.info(f"Saved element as temporary image: {temp_file_path}")
+        logger.info("Saved element as temporary image: %s", temp_file_path)
+        # Check if the screenshot was successfully saved
+        if not os.path.exists(temp_file_path) or not os.path.getsize(temp_file_path):
+            logger.error("Failed to save element screenshot at %s", temp_file_path)
+            raise Exception(f"Failed to save element screenshot: {temp_file_path}")
 
-    if not os.path.exists(temp_file_path) or not os.path.getsize(temp_file_path):
-        raise Exception(f"Failed to save element screenshot: {temp_file_path}")
-    return temp_file_path
-
+        return temp_file_path
 
 def click_this_element(
         driver: Optional[WebDriver],
@@ -77,7 +92,6 @@ def click_this_element(
             steps_range=steps_range
         )
 
-        # Step 5: Clean up the temporary file
         os.remove(file_path)
         logger.info(f"Temporary image file '{file_path}' deleted.")
 

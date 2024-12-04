@@ -46,12 +46,12 @@ def test_locate_image(driver, button_box, input_box):
 
 def test_click_at_coordinates(driver, button_box, input_box):
     x, y = button_box.center()
-    click_at_coordinates(x=x, y=y, duration_range=(1, 3), steps_range=(200,300))
+    click_at_coordinates(target=(x,y), duration_range=(1, 3))
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-button-1'
 
     x, y = input_box.center()
-    click_at_coordinates(x=x, y=y, duration_range=(1, 3), steps_range=(200,300))
+    click_at_coordinates(target=(x,y), duration_range=(1, 3))
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-input'
 

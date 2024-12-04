@@ -97,3 +97,4 @@ def calculate_human_duration_range(
 
     # Return the clamped values
     return round(scaled_min_dur, 2), round(scaled_max_dur, 2)
+

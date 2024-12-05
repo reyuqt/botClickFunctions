@@ -23,7 +23,7 @@ def driver():
     os.remove('test_button.png')
     os.remove('test_input.png')
 
-'''@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def reset_state():
     """
     Fixture to reset the system state before each test function.
@@ -31,7 +31,7 @@ def reset_state():
     """
     yield
     pyautogui.moveTo(0, 0, duration=0.5)
-    time.sleep(0.5)'''
+    time.sleep(0.5)
 
 @pytest.fixture
 def button_box() -> Box:

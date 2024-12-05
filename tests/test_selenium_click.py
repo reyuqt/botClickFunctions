@@ -1,11 +1,22 @@
 from selenium.webdriver.common.by import By
 from webdriver_click_functions.selenium.click import get_element, click_this_element, save_element, \
-    click_inside_this_element
+    click_inside_this_element, ElementNotFoundError
 
 selectors_to_test = [(By.ID, 'test-button-1'), (By.ID, 'test-input')]
+
+
 def test_get_element(driver):
-    button = get_element(driver, (By.ID, 'test-button-1'))
-    assert button is not None
+    for selector in selectors_to_test:
+        button = get_element(driver, selector)
+        assert button is not None
+
+
+def test_element_does_not_exist(driver):
+    try:
+        get_element(driver, (By.ID, 'made-up-id'), timeout=2)
+        assert False
+    except ElementNotFoundError:
+        assert True
 
 
 def test_save_element(driver):

@@ -9,6 +9,12 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 import selenium.webdriver.support.expected_conditions as EC
+from selenium.common.exceptions import (
+    TimeoutException,
+    NoSuchElementException,
+    ElementNotInteractableException,
+    StaleElementReferenceException,
+)
 
 from webdriver_click_functions.mouse import click_image
 from webdriver_click_functions.utils import get_logger
@@ -18,6 +24,10 @@ from webdriver_click_functions.selenium.confirm import Clicked
 logger = get_logger("selenium_click")
 
 
+# Custom Exceptions
+class ElementNotFoundError(Exception):
+    """Exception raised when a WebElement is not found within the specified timeout."""
+    pass
 
 def outline_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement], border_color: str = 'red',
                     border_width: str = '2px'):
@@ -36,18 +46,70 @@ def scroll_to_element(driver: WebDriver, selector: Union[tuple[str, str], WebEle
     """ @TODO handle elements that arent on screen yet """
     pass
 
-def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement], timeout: int = 10) -> WebElement:
+
+def get_element(
+        driver: WebDriver,
+        selector: Union[Tuple[str, str], WebElement],
+        timeout: int = 10
+) -> WebElement:
     """
     Helper function to resolve a WebElement or locate it using a selector tuple.
-    If you use a selector WebDriverWait will automatically be used to find the element
+    If a selector tuple is provided, WebDriverWait is used to find the element.
+
+    Args:
+        driver (WebDriver): The Selenium WebDriver instance.
+        selector (Union[Tuple[str, str], WebElement]): A tuple of (By, locator) or an existing WebElement.
+        timeout (int, optional): Maximum time to wait for the element. Defaults to 10 seconds.
+
+    Returns:
+        WebElement: The located WebElement.
+
+    Raises:
+        ValueError: If the selector type is neither a tuple nor a WebElement.
+        ElementNotFoundError: Custom exception if the element is not found within the timeout.
+        ElementNotInteractableError: Custom exception if the element is found but not interactable.
     """
-    if isinstance(selector, tuple):
-        logger.debug(f'Resolving selector tuple: {selector}')
-        return WebDriverWait(driver, timeout).until(
-            EC.element_to_be_clickable(selector)
-        )
-    logger.debug(f'Selector is already a WebElement')
-    return selector
+    try:
+        if isinstance(selector, tuple):
+            logger.debug(f"Resolving selector tuple: {selector}")
+            element = WebDriverWait(driver, timeout).until(
+                EC.element_to_be_clickable(selector)
+            )
+            logger.info(f"Element found using selector: {selector}")
+            return element
+        elif isinstance(selector, WebElement):
+            logger.debug("Selector is already a WebElement.")
+            # Optionally, you can verify if the element is still attached to the DOM
+            if not selector.is_displayed():
+                logger.warning("WebElement is not visible.")
+                raise ElementNotInteractableException("WebElement is not visible.")
+            return selector
+        else:
+            logger.error("Selector must be a tuple or a WebElement.")
+            raise ValueError("Selector must be a tuple of (By, locator) or a WebElement instance.")
+
+    except TimeoutException:
+        logger.error(f"Timeout: Element with selector {selector} not found within {timeout} seconds.")
+        raise ElementNotFoundError(f"Element with selector {selector} not found within {timeout} seconds.")
+
+    except NoSuchElementException:
+        logger.error(f"No such element: {selector}")
+        raise ElementNotFoundError(f"No such element: {selector}")
+
+    except ElementNotInteractableException as e:
+        logger.error(f"Element not interactable: {selector}. Exception: {e}")
+        raise ElementNotInteractableException(f"Element not interactable: {selector}. Exception: {e}")
+
+    except StaleElementReferenceException as e:
+        logger.error(f"Stale element reference: {selector}. Exception: {e}")
+        raise ElementNotFoundError(f"Stale element reference: {selector}. Exception: {e}")
+
+    except Exception as e:
+        logger.exception(f"An unexpected error occurred while getting the element: {selector}. Exception: {e}")
+        raise e
+
+
+
 
 
 def save_element(element: WebElement, name: Optional[str] = None) -> str:

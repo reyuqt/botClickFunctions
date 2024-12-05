@@ -8,32 +8,11 @@ from typing import Tuple, List, Optional, Callable
 from webdriver_click_functions.box import Box
 from webdriver_click_functions.utils import get_logger
 from webdriver_click_functions.screen import locate_image
+from webdriver_click_functions.easing import linear, MOUSE_MOVEMENTS
 
 logger = get_logger("mouse")
 
-pyautogui.MINIMUM_DURATION = 0
-pyautogui.MINIMUM_SLEEP = 0
-pyautogui.PAUSE = 0
-pyautogui.FAILSAFE = False
 
-MOUSE_MOVEMENTS = [
-    pyautogui.easeInQuad,
-    pyautogui.easeOutQuad,
-    pyautogui.easeInOutQuad,
-    pyautogui.easeInOutSine,
-    pyautogui.easeInQuint,
-    pyautogui.easeInElastic,
-    pyautogui.easeInBounce,
-]
-
-
-def ease_in_out_sine(t: float) -> float:
-    """Ease-in-out sine function."""
-    return -(math.cos(math.pi * t) - 1) / 2
-
-def linear(t: float) -> float:
-    """Linear easing function."""
-    return t
 
 def calculate_variable_delays(duration: float, steps: int, variation: float = 0.1) -> List[float]:
     """

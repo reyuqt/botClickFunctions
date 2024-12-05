@@ -89,14 +89,33 @@ def click_with_bezier(
         logger.info(f"Starting position: x={start.x}, y={start.y}")
         logger.info(f"Target position: x={target[0]}, y={target[1]}")
 
-        # Randomly generate two control points for the curve
+        # Calculate vertical distance
+        vertical_distance = abs(target[1] - start.y)
+
+        # Define minimum offset
+        min_offset = 100
+        if vertical_distance >= min_offset:
+            # Generate control1 within (min_y, max_y - 100)
+            control1_y_lower = min(start.y, target[1])
+            control1_y_upper = max(start.y, target[1]) - min_offset
+            control2_y_lower = min(start.y, target[1]) + min_offset
+            control2_y_upper = max(start.y, target[1])
+        else:
+            # Adjust offset based on actual distance to prevent negative range
+            adjusted_offset = vertical_distance / 2
+            control1_y_lower = min(start.y, target[1])
+            control1_y_upper = max(start.y, target[1]) - adjusted_offset
+            control2_y_lower = min(start.y, target[1]) + adjusted_offset
+            control2_y_upper = max(start.y, target[1])
+
+        # Generate two control points for the curve
         control1 = (
             random.randint(round(min(start.x, target[0])), round(max(start.x, target[0]))),
-            random.randint(round(min(start.y, target[1])), round(max(start.y, target[1]) - 100)),
+            random.randint(round(control1_y_lower), round(control1_y_upper)),
         )
         control2 = (
             random.randint(round(min(start.x, target[0])), round(max(start.x, target[0]))),
-            random.randint(round(min(start.y, target[1]) + 100), round(max(start.y, target[1]))),
+            random.randint(round(control2_y_lower), round(control2_y_upper)),
         )
         logger.info(f"Generated control points: control1={control1}, control2={control2}")
 
@@ -118,6 +137,7 @@ def click_with_bezier(
 
     except Exception as e:
         logger.error(f"An error occurred during the Bezier mouse movement: {e}", exc_info=True)
+
 
 
 def click_at_coordinates(target: Tuple[int, int], duration: float = 1):

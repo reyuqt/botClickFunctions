@@ -18,6 +18,26 @@ def linear(t: float) -> float:
     return t
 
 
+""" QUAD """
+
+
+def ease_in_quad(t: float) -> float:
+    """Ease-in quadratic easing function."""
+    return t * t
+
+
+def ease_out_quad(t: float) -> float:
+    """Ease-out quadratic easing function."""
+    return t * (2 - t)
+
+
+def ease_in_out_quad(t: float) -> float:
+    """Ease-in-out quadratic easing function."""
+    if t < 0.5:
+        return 2 * t * t
+    return -1 + (4 - 2 * t) * t
+
+
 """ CUBIC """
 
 
@@ -231,6 +251,17 @@ def ease_in_out_bounce(t: float) -> float:
     return (1 + ease_out_bounce(2 * t - 1)) / 2
 
 
-def ease_in_quad(t: float) -> float:
-    """Ease-in quadratic easing function."""
-    return t * t
+def custom_easing(t: float) -> float:
+    """
+    Define your custom easing function here.
+
+    Parameters:
+        t: Parameter ranging from 0 to 1.
+
+    Returns:
+        Adjusted t based on custom easing logic.
+    """
+    # Example: Quadratic ease-in followed by linear
+    if t < 0.5:
+        return 2 * t * t
+    return t

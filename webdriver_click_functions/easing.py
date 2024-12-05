@@ -49,6 +49,23 @@ def ease_in_out_quart(t: float) -> float:
     t -= 1
     return 1 - 8 * t ** 4
 
+""" QUINTIC  """
+def ease_in_quint(t: float) -> float:
+    """Ease-in quintic easing function."""
+    return t ** 5
+
+def ease_out_quint(t: float) -> float:
+    """Ease-out quintic easing function."""
+    t -= 1
+    return t ** 5 + 1
+
+def ease_in_out_quint(t: float) -> float:
+    """Ease-in-out quintic easing function."""
+    if t < 0.5:
+        return 16 * t ** 5
+    t -= 1
+    return 1 + 16 * t ** 5
+
 
 def ease_in_quad(t: float) -> float:
     """Ease-in quadratic easing function."""

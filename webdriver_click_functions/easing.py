@@ -78,6 +78,47 @@ def ease_in_out_sine(t: float) -> float:
     """Ease-in-out sine easing function."""
     return -(math.cos(math.pi * t) - 1) / 2
 
+""" EXPONENTIAL """
+
+def ease_in_expo(t: float) -> float:
+    """Ease-in exponential easing function."""
+    if t == 0:
+        return 0
+    return 2 ** (10 * (t - 1))
+
+def ease_out_expo(t: float) -> float:
+    """Ease-out exponential easing function."""
+    if t == 1:
+        return 1
+    return 1 - 2 ** (-10 * t)
+
+def ease_in_out_expo(t: float) -> float:
+    """Ease-in-out exponential easing function."""
+    if t == 0:
+        return 0
+    if t == 1:
+        return 1
+    if t < 0.5:
+        return (2 ** (20 * t - 10)) / 1023
+    return (2 - 2 ** (-20 * t + 10)) / 1023
+
+""" CIRCULAR """
+
+def ease_in_circ(t: float) -> float:
+    """Ease-in circular easing function."""
+    return 1 - math.sqrt(1 - t * t)
+
+def ease_out_circ(t: float) -> float:
+    """Ease-out circular easing function."""
+    t -= 1
+    return math.sqrt(1 - t * t)
+
+def ease_in_out_circ(t: float) -> float:
+    """Ease-in-out circular easing function."""
+    if t < 0.5:
+        return (1 - math.sqrt(1 - (2 * t) ** 2)) / 2
+    t = 2 * t - 2
+    return (math.sqrt(1 - t * t) + 1) / 2
 
 
 def ease_in_quad(t: float) -> float:

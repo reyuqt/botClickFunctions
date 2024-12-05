@@ -1,7 +1,9 @@
+import math
+
 import pyautogui
 import time
 import random
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Callable
 
 from webdriver_click_functions.box import Box
 from webdriver_click_functions.utils import get_logger
@@ -23,17 +25,20 @@ MOUSE_MOVEMENTS = [
     pyautogui.easeInElastic,
     pyautogui.easeInBounce,
 ]
-
+def ease_in_out_sine(t: float) -> float:
+    """Ease-in-out sine function."""
+    return -(math.cos(math.pi * t) - 1) / 2
 
 def generate_cubic_bezier_curve(
         p0: Tuple[int, int],
         p1: Tuple[int, int],
         p2: Tuple[int, int],
         p3: Tuple[int, int],
-        steps: int
+        steps: int,
+        easing_func: Callable[[float], float] = lambda t: t  # Linear by default
 ) -> List[Tuple[int, int]]:
     """
-    Generate points along a cubic Bezier curve.
+    Generate points along a cubic Bezier curve with optional easing.
 
     Parameters:
         p0: Start point (x, y)
@@ -41,6 +46,7 @@ def generate_cubic_bezier_curve(
         p2: Second control point (x, y)
         p3: End point (x, y)
         steps: Number of points to generate
+        easing_func: Function to adjust t for easing
 
     Returns:
         List of points along the curve
@@ -49,23 +55,23 @@ def generate_cubic_bezier_curve(
         raise ValueError("Number of steps must be a positive integer.")
 
     logger.debug(f"Generating Bezier curve: start={p0}, control1={p1}, control2={p2}, end={p3}, steps={steps}")
-    points = [
-        (
-            int(
-                (1 - t) ** 3 * p0[0]
-                + 3 * (1 - t) ** 2 * t * p1[0]
-                + 3 * (1 - t) * t ** 2 * p2[0]
-                + t ** 3 * p3[0]
-            ),
-            int(
-                (1 - t) ** 3 * p0[1]
-                + 3 * (1 - t) ** 2 * t * p1[1]
-                + 3 * (1 - t) * t ** 2 * p2[1]
-                + t ** 3 * p3[1]
-            )
+    points = []
+    for i in range(steps + 1):
+        t = i / steps
+        eased_t = easing_func(t)
+        x = (
+            (1 - eased_t) ** 3 * p0[0]
+            + 3 * (1 - eased_t) ** 2 * eased_t * p1[0]
+            + 3 * (1 - eased_t) * eased_t ** 2 * p2[0]
+            + eased_t ** 3 * p3[0]
         )
-        for t in (i / steps for i in range(steps + 1))
-    ]
+        y = (
+            (1 - eased_t) ** 3 * p0[1]
+            + 3 * (1 - eased_t) ** 2 * eased_t * p1[1]
+            + 3 * (1 - eased_t) * eased_t ** 2 * p2[1]
+            + eased_t ** 3 * p3[1]
+        )
+        points.append((int(x), int(y)))
     logger.debug(f"Generated {len(points)} points along the curve.")
     return points
 
@@ -73,7 +79,8 @@ def generate_cubic_bezier_curve(
 def click_with_bezier(
         target: Tuple[int, int],
         duration: float = 1,
-        steps: int = 100
+        steps: int = 100,
+        easing_func: Callable[[float], float] = ease_in_out_sine,
 ):
     """
     Moves the mouse to the target using a Bezier curve and clicks.
@@ -120,7 +127,7 @@ def click_with_bezier(
         logger.info(f"Generated control points: control1={control1}, control2={control2}")
 
         # Generate points along the cubic Bezier curve
-        bezier_points = generate_cubic_bezier_curve(start, control1, control2, target, steps)
+        bezier_points = generate_cubic_bezier_curve(start, control1, control2, target, steps, easing_func)
 
         # Calculate delay between steps
         delay = duration / steps

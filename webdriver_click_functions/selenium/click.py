@@ -1,10 +1,7 @@
 import os
 import tempfile
 import time
-from typing import Union, Tuple, Optional, Callable
-import re
-
-from selenium.common.exceptions import TimeoutException
+from typing import Union, Tuple, Optional, Callable, Dict
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
@@ -119,7 +116,6 @@ def save_element(element: WebElement, name: Optional[str] = None) -> str:
     Parameters:
     element (WebElement): The web element to capture.
     name (Optional[str]): The name of the file to save the screenshot. If not provided, a temporary file will be used.
-    delete_on_close (bool): If True, the temporary file will be deleted on close. Default is True.
 
     Returns:
     str: The full path of the saved screenshot.
@@ -159,7 +155,8 @@ def click_this_element(
         y_reduction: float = 0.2,
         duration_range: Tuple[float, float] = (1, 3),
         steps_range: Tuple[int, int] = (150, 300),
-        perform_test: Optional[Callable] = Clicked.default
+        perform_test: Optional[Callable] = Clicked.default,
+        test_kwargs: Optional[Dict] = None
 ) -> bool:
     """
     Locate an element, save it as a temporary image, and click it using our utility function.
@@ -185,7 +182,7 @@ def click_this_element(
         if perform_test is None:
             return success
         else:
-            return perform_test(driver, element)
+            return perform_test(driver, element, **test_kwargs)
 
     except Exception as e:
         logger.exception(f"Error in clicking element '{selector}': {e}")

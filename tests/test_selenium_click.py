@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from webdriver_click_functions.selenium.click import get_element, click_this_element, save_element, \
     click_inside_this_element, ElementNotFoundError
 
-selectors_to_test = [(By.ID, 'test-button-1'), (By.ID, 'test-input')]
+selectors_to_test = [(By.ID, 'test-button-1'), (By.ID, 'test-input'), (By.ID, 'gender-female')]
 
 
 def test_get_element(driver):

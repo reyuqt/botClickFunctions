@@ -1,6 +1,7 @@
 import time
 
-from webdriver_click_functions.mouse import click_image, click_at_coordinates, click_with_bezier, ease_in_out_sine, linear
+from webdriver_click_functions.mouse import click_image, click_at_coordinates, click_with_bezier
+from webdriver_click_functions.easing import linear, ease_in_out_sine
 import random
 
 def test_click_at_coordinates(driver, button_box, input_box):
@@ -26,7 +27,7 @@ def test_click_with_bezier_linear(driver, button_box, input_box):
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-input'
 
-def test_click_with_bezier_ease(driver, button_box, input_box):
+def test_click_with_bezier_ease_in_out_sine(driver, button_box, input_box):
     x, y = button_box.center()
     click_with_bezier(target=(x, y), duration=random.uniform(1,3), steps=random.randint(100,300), easing_func=ease_in_out_sine)
     last_clicked = driver.execute_script("return window.lastClickedElement;")

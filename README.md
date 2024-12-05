@@ -109,6 +109,10 @@ pytest tests/
 ```
 
 This will execute all the tests in the `tests/` directory.
+## TODO
+- maybe I want some jitter
+- automatic retry on perform_check failure
+- playwright intigration
 
 ## Contributing
 

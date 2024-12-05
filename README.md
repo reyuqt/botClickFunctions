@@ -64,14 +64,26 @@ coordinates, enhancing automation scripts with more natural movements.
     duration_range=(1, 3), # Duration range for the click action
     steps_range=(150, 300) # Number of steps for mouse movement
     )```
-## Features
+
 ### EASING
-![linear.png](visualizations%2Flinear.png)
+``` from webdriver_click_functions.easing import EASING_FUNCTIONS```
+#### Linear Easing
+![linear.png](visualizations/linear.png)
+#### Quad Easing
+![ease_in_back.png](visualizations/ease_in_quad.png)
 
-![ease_in_back.png](visualizations%2Fease_in_back.png)
+#### Quint Easing
+![ease_in_quint.png](visualizations/ease_in_quint.png)
+
+#### Bounce Easing
+![ease_in_bounce.png](visualizations/ease_in_bounce.png)
+
+### Click Verification
+``` from webdriver_click_functions.selenium.confirm import Clicked```
+
+there are a number of ways to verify that the element has been clicked I included some helper functions. Some of these include built in methods with selenium, or javascript injection. Alternatively, you can pass your own custom function that should return a bool wether the element was clicked or not.
+
 ## Project Structure
-
-The project is organized as follows:
 
 - **webdriver_click_functions/**: Contains the core functionality for mouse and element interactions.
     - `box.py`: Handles Bezier curve calculations.

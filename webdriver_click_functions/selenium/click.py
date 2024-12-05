@@ -17,6 +17,7 @@ from webdriver_click_functions.mouse import click_image
 from webdriver_click_functions.utils import get_logger
 from webdriver_click_functions.screen import locate_image
 from webdriver_click_functions.selenium.confirm import Clicked
+from webdriver_click_functions.easing import linear
 
 logger = get_logger("selenium_click")
 
@@ -156,7 +157,8 @@ def click_this_element(
         duration_range: Tuple[float, float] = (1, 3),
         steps_range: Tuple[int, int] = (150, 300),
         perform_test: Optional[Callable] = Clicked.default,
-        test_kwargs: Optional[Dict] = None
+        test_kwargs: Optional[Dict] = None,
+        easing_func: Callable[[float], float] = linear
 ) -> bool:
     """
     Locate an element, save it as a temporary image, and click it using our utility function.
@@ -174,7 +176,8 @@ def click_this_element(
             x_reduction=x_reduction,
             y_reduction=y_reduction,
             duration_range=duration_range,
-            steps_range=steps_range
+            steps_range=steps_range,
+            easing_func=easing_func
         )
 
         os.remove(file_path)
@@ -198,7 +201,11 @@ def click_inside_this_element(driver: Optional[WebDriver],
                               x_reduction: float = 0.2,
                               y_reduction: float = 0.2,
                               duration_range: Tuple[float, float] = (1, 3),
-                              steps_range: Tuple[int, int] = (150, 300)):
+                              steps_range: Tuple[int, int] = (150, 300),
+                              perform_test: Optional[Callable] = Clicked.default,
+                              test_kwargs: Optional[Dict] = None,
+                              easing_func: Callable[[float], float] = linear
+                              ):
     """
     Locate an outer_element, then locate an element inside of outer_element and click it using our mouse function.
     @TODO I think this could be 1 function with click_this_element, but I haven't decided how I would structure both together.
@@ -222,15 +229,19 @@ def click_inside_this_element(driver: Optional[WebDriver],
             x_reduction=x_reduction,
             y_reduction=y_reduction,
             duration_range=duration_range,
-            steps_range=steps_range
+            steps_range=steps_range,
+            easing_func=easing_func
         )
 
         os.remove(outer_element_file_path)
         logger.info(f"Temporary image file '{outer_element_file_path}' deleted.")
         os.remove(inner_element_file_path)
         logger.info(f"Temporary image file '{inner_element_file_path}' deleted.")
-
-        return success
+        if perform_test is None:
+            return success
+        else:
+            test_kwargs = test_kwargs or {}
+            return perform_test(driver, inner_element, **test_kwargs)
 
     except Exception as e:
         logger.exception(f"Error in clicking element '{selector_inner}' inside '{selector_outer}': {e}")

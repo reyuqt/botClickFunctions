@@ -1,10 +1,12 @@
 import os
 import tempfile
 import time
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Callable
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.wait import WebDriverWait
+import selenium.webdriver.support.expected_conditions as EC
 
 from webdriver_click_functions.mouse import click_image
 from webdriver_click_functions.utils import get_logger
@@ -12,6 +14,38 @@ from webdriver_click_functions.screen import locate_image
 
 logger = get_logger(__name__)
 
+
+class Clicked:
+    """ different methods to verify if an element has been clicked, mostly shortcuts for how I've tested in the past """
+    @staticmethod
+    def default(driver, element: WebElement) -> bool:
+        return driver.switch_to.active_element == element
+
+    @staticmethod
+    def navigation(driver, element: WebElement, expected_url) -> bool:
+        pass
+    @staticmethod
+    def selected(element: WebElement) -> bool:
+        return element.is_selected()
+
+    @staticmethod
+    def injection(driver, element: WebElement) -> bool:
+        # we would inject script before click and use event listeners to watch and record changes
+        # after click we would check record to see if right thing was clicked
+        pass
+
+    @staticmethod
+    def has_attribute(driver, element: WebElement, attribute_name: str, attribute_value: Optional[str] = None) -> bool:
+        if attribute_value is None:
+            return element.get_attribute(attribute_name) is not None
+        else:
+            return attribute_value in element.get_attribute(attribute_name)
+
+
+    @staticmethod
+    def has_text(element, text: str) -> bool:
+        """ use if youre expecting the text to change after click """
+        pass
 
 def outline_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement], border_color: str = 'red',
                     border_width: str = '2px'):
@@ -27,13 +61,16 @@ def outline_element(driver: WebDriver, selector: Union[tuple[str, str], WebEleme
     )
 
 
-def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement]) -> WebElement:
+def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement], timeout:int = 10) -> WebElement:
     """
     Helper function to resolve a WebElement or locate it using a selector tuple.
+    If you use a selector WebDriverWait will automatically be used to find the element
     """
     if isinstance(selector, tuple):
         logger.debug(f'Resolving selector tuple: {selector}')
-        return driver.find_element(*selector)
+        return WebDriverWait(driver, timeout).until(
+            EC.element_to_be_clickable(*selector)
+        )
     logger.debug(f'Selector is already a WebElement')
     return selector
 
@@ -85,6 +122,7 @@ def click_this_element(
         y_reduction: float = 0.2,
         duration_range: Tuple[float, float] = (1, 3),
         steps_range: Tuple[int, int] = (150, 300),
+        perform_test: Optional[Callable] = Clicked.default
 ) -> bool:
     """
     Locate an element, save it as a temporary image, and click it using our utility function.
@@ -107,8 +145,10 @@ def click_this_element(
 
         os.remove(file_path)
         logger.info(f"Temporary image file '{file_path}' deleted.")
-
-        return success
+        if perform_test is None:
+            return success
+        else:
+            return perform_test(driver, element)
 
     except Exception as e:
         logger.exception(f"Error in clicking element '{selector}': {e}")
@@ -126,6 +166,7 @@ def click_inside_this_element(driver: Optional[WebDriver],
                               steps_range: Tuple[int, int] = (150, 300)):
     """
     Locate an outer_element, then locate an element inside of outer_element and click it using our mouse function.
+    @TODO I think this could be 1 function with click_this_element, but I haven't decided how I would structure both together.
     """
     try:
         outer_element = get_element(driver, selector_outer)
@@ -160,4 +201,3 @@ def click_inside_this_element(driver: Optional[WebDriver],
     except Exception as e:
         logger.exception(f"Error in clicking element '{selector_inner}' inside '{selector_outer}': {e}")
         return False
-

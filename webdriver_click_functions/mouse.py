@@ -86,6 +86,41 @@ def generate_cubic_bezier_curve(
     logger.debug(f"Generated {len(points)} points along the curve.")
     return points
 
+def get_bezier_path(start, target):
+    # Calculate vertical distance
+    vertical_distance = abs(target[1] - start.y)
+
+    # Define minimum offset
+    min_offset = 100
+    if vertical_distance >= min_offset:
+        # Generate control1 within (min_y, max_y - 100)
+        control1_y_lower = min(start.y, target[1])
+        control1_y_upper = max(start.y, target[1]) - min_offset
+        control2_y_lower = min(start.y, target[1]) + min_offset
+        control2_y_upper = max(start.y, target[1])
+    else:
+        # Adjust offset based on actual distance to prevent negative range
+        adjusted_offset = vertical_distance / 2
+        control1_y_lower = min(start.y, target[1])
+        control1_y_upper = max(start.y, target[1]) - adjusted_offset
+        control2_y_lower = min(start.y, target[1]) + adjusted_offset
+        control2_y_upper = max(start.y, target[1])
+
+        # Ensure that upper bounds are not less than lower bounds
+        control1_y_upper = max(control1_y_upper, control1_y_lower)
+        control2_y_upper = max(control2_y_upper, control2_y_lower)
+
+    # Generate two control points for the curve
+    control1 = (
+        random.randint(round(min(start.x, target[0])), round(max(start.x, target[0]))),
+        random.randint(round(control1_y_lower), round(control1_y_upper)),
+    )
+    control2 = (
+        random.randint(round(min(start.x, target[0])), round(max(start.x, target[0]))),
+        random.randint(round(control2_y_lower), round(control2_y_upper)),
+    )
+    logger.info(f"Generated control points: control1={control1}, control2={control2}")
+    return control1, control2
 
 def click_with_bezier(
         target: Tuple[int, int],
@@ -114,40 +149,7 @@ def click_with_bezier(
         logger.info(f"Starting position: x={start.x}, y={start.y}")
         logger.info(f"Target position: x={target[0]}, y={target[1]}")
 
-        # Calculate vertical distance
-        vertical_distance = abs(target[1] - start.y)
-
-        # Define minimum offset
-        min_offset = 100
-        if vertical_distance >= min_offset:
-            # Generate control1 within (min_y, max_y - 100)
-            control1_y_lower = min(start.y, target[1])
-            control1_y_upper = max(start.y, target[1]) - min_offset
-            control2_y_lower = min(start.y, target[1]) + min_offset
-            control2_y_upper = max(start.y, target[1])
-        else:
-            # Adjust offset based on actual distance to prevent negative range
-            adjusted_offset = vertical_distance / 2
-            control1_y_lower = min(start.y, target[1])
-            control1_y_upper = max(start.y, target[1]) - adjusted_offset
-            control2_y_lower = min(start.y, target[1]) + adjusted_offset
-            control2_y_upper = max(start.y, target[1])
-
-            # Ensure that upper bounds are not less than lower bounds
-            control1_y_upper = max(control1_y_upper, control1_y_lower)
-            control2_y_upper = max(control2_y_upper, control2_y_lower)
-
-        # Generate two control points for the curve
-        control1 = (
-            random.randint(round(min(start.x, target[0])), round(max(start.x, target[0]))),
-            random.randint(round(control1_y_lower), round(control1_y_upper)),
-        )
-        control2 = (
-            random.randint(round(min(start.x, target[0])), round(max(start.x, target[0]))),
-            random.randint(round(control2_y_lower), round(control2_y_upper)),
-        )
-        logger.info(f"Generated control points: control1={control1}, control2={control2}")
-
+        control1, control2 = get_bezier_path(start, target)
         # Generate points along the cubic Bezier curve with easing
         bezier_points = generate_cubic_bezier_curve(start, control1, control2, target, steps, easing_func)
 

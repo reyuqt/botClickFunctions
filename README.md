@@ -12,7 +12,7 @@ The WebDriver Click Functions project provides a set of utilities for performing
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/reyuqt/webdriverClickFunctions.git
    ```
 2. Navigate to the project directory:
    ```bash

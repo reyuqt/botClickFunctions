@@ -2,6 +2,18 @@ import logging
 import os
 import math
 from typing import Tuple
+from pathlib import Path
+
+
+def get_project_root() -> Path:
+    """
+    Returns the absolute Path to the project root directory.
+    Assumes this file is located at PROJECT_ROOT/webdriver_click_functions/utils.py
+    """
+    root = Path(__file__).resolve().parent.parent
+    print(root)
+    return root
+
 
 def get_logger(name=__name__, log_level=logging.INFO, log_file=None):
     # Create a logger
@@ -29,7 +41,9 @@ def get_logger(name=__name__, log_level=logging.INFO, log_file=None):
 
     return logger
 
+
 logger = get_logger("click_helper")
+
 
 def retry(times: int, exceptions: tuple[type(Exception)] = (Exception,)):
     """
@@ -53,10 +67,10 @@ def retry(times: int, exceptions: tuple[type(Exception)] = (Exception,)):
 
 
 def calculate_human_duration_range(
-    start: Tuple[int, int],
-    end: Tuple[int, int],
-    min_dur: float,
-    max_dur: float
+        start: Tuple[int, int],
+        end: Tuple[int, int],
+        min_dur: float,
+        max_dur: float
 ) -> Tuple[float, float]:
     """
     Calculate a recommended range for mouse movement duration based on the distance between start and end points.
@@ -71,10 +85,10 @@ def calculate_human_duration_range(
         A tuple (min_duration, max_duration) for the recommended range of durations, clamped to [min_dur, max_dur].
     """
     # Calculate the Euclidean distance between start and end
-    distance = math.sqrt((end[0] - start[0])**2 + (end[1] - start[1])**2)
+    distance = math.sqrt((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2)
 
     # Assume a maximum reasonable screen distance (e.g., diagonal of a 1920x1080 screen)
-    max_distance = math.sqrt(1920**2 + 1080**2)  # Adjust for your screen size
+    max_distance = math.sqrt(1920 ** 2 + 1080 ** 2)  # Adjust for your screen size
 
     # Use normalized fraction to calculate scaled durations
     # Ended up removing this one because I didn't want min_dur and max_dur factored into the result, but maybe that would give it some sameness in the same session?

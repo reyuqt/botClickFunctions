@@ -5,6 +5,12 @@ import random
 from time import sleep
 from typing import Tuple
 from pathlib import Path
+import pyautogui
+
+pyautogui.MINIMUM_DURATION = 0
+pyautogui.MINIMUM_SLEEP = 0
+pyautogui.PAUSE = 0
+pyautogui.FAILSAFE = False
 
 
 def get_project_root() -> Path:

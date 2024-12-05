@@ -201,6 +201,36 @@ def ease_in_out_elastic(t: float) -> float:
     return 0.5 * (math.sin(-13 * math.pi / 2 * (t)) * 2 ** (-10 * t) + 2)
 
 
+""" BOUNCE """
+
+
+def ease_out_bounce(t: float) -> float:
+    """Ease-out bounce easing function."""
+    if t < (1 / 2.75):
+        return 7.5625 * t * t
+    elif t < (2 / 2.75):
+        t -= (1.5 / 2.75)
+        return 7.5625 * t * t + 0.75
+    elif t < (2.5 / 2.75):
+        t -= (2.25 / 2.75)
+        return 7.5625 * t * t + 0.9375
+    else:
+        t -= (2.625 / 2.75)
+        return 7.5625 * t * t + 0.984375
+
+
+def ease_in_bounce(t: float) -> float:
+    """Ease-in bounce easing function."""
+    return 1 - ease_out_bounce(1 - t)
+
+
+def ease_in_out_bounce(t: float) -> float:
+    """Ease-in-out bounce easing function."""
+    if t < 0.5:
+        return (1 - ease_out_bounce(1 - 2 * t)) / 2
+    return (1 + ease_out_bounce(2 * t - 1)) / 2
+
+
 def ease_in_quad(t: float) -> float:
     """Ease-in quadratic easing function."""
     return t * t

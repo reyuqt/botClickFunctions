@@ -23,16 +23,6 @@ def driver():
     os.remove('test_button.png')
     os.remove('test_input.png')
 
-@pytest.fixture(scope="module", autouse=True)
-def reset_state():
-    """
-    Fixture to reset the system state before each test function.
-    Useful when using PyAutoGUI to ensure a clean slate.
-    """
-    yield
-    pyautogui.moveTo(0, 0, duration=0.5)
-    time.sleep(0.5)
-
 @pytest.fixture
 def button_box() -> Box:
     return locate_image('test_button.png', region=None, confidence=0.8, min_confidence=0.5, retries=3)

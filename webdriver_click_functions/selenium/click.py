@@ -182,6 +182,7 @@ def click_this_element(
         if perform_test is None:
             return success
         else:
+            test_kwargs = test_kwargs or {}
             return perform_test(driver, element, **test_kwargs)
 
     except Exception as e:

@@ -66,6 +66,19 @@ def ease_in_out_quint(t: float) -> float:
     t -= 1
     return 1 + 16 * t ** 5
 
+""" SINUSOIDAL """
+def ease_in_sine(t: float) -> float:
+    """Ease-in sine easing function."""
+    return 1 - math.cos((t * math.pi) / 2)
+
+def ease_out_sine(t: float) -> float:
+    """Ease-out sine easing function."""
+    return math.sin((t * math.pi) / 2)
+def ease_in_out_sine(t: float) -> float:
+    """Ease-in-out sine easing function."""
+    return -(math.cos(math.pi * t) - 1) / 2
+
+
 
 def ease_in_quad(t: float) -> float:
     """Ease-in quadratic easing function."""

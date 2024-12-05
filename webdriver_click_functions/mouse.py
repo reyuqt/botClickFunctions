@@ -24,6 +24,7 @@ MOUSE_MOVEMENTS = [
     pyautogui.easeInBounce,
 ]
 
+
 def generate_cubic_bezier_curve(
         p0: Tuple[int, int],
         p1: Tuple[int, int],
@@ -44,22 +45,27 @@ def generate_cubic_bezier_curve(
     Returns:
         List of points along the curve
     """
+    if steps <= 0:
+        raise ValueError("Number of steps must be a positive integer.")
+
     logger.debug(f"Generating Bezier curve: start={p0}, control1={p1}, control2={p2}, end={p3}, steps={steps}")
-    points = []
-    for t in [i / steps for i in range(steps + 1)]:
-        x = (
+    points = [
+        (
+            int(
                 (1 - t) ** 3 * p0[0]
                 + 3 * (1 - t) ** 2 * t * p1[0]
                 + 3 * (1 - t) * t ** 2 * p2[0]
                 + t ** 3 * p3[0]
-        )
-        y = (
+            ),
+            int(
                 (1 - t) ** 3 * p0[1]
                 + 3 * (1 - t) ** 2 * t * p1[1]
                 + 3 * (1 - t) * t ** 2 * p2[1]
                 + t ** 3 * p3[1]
+            )
         )
-        points.append((int(x), int(y)))
+        for t in (i / steps for i in range(steps + 1))
+    ]
     logger.debug(f"Generated {len(points)} points along the curve.")
     return points
 
@@ -123,7 +129,7 @@ def click_at_coordinates(target: Tuple[int, int], duration: float = 1):
         duration_range (tuple): Range for click duration (optional).
         steps_range (tuple): Range for steps amount (optional).
     """
-    x,y = target
+    x, y = target
     pyautogui.click(x, y, logScreenshot=False,
                     tween=random.choice(MOUSE_MOVEMENTS),
                     duration=duration)

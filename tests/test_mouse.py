@@ -4,39 +4,46 @@ from webdriver_click_functions.mouse import click_image, click_at_coordinates, c
 from webdriver_click_functions.easing import linear, ease_in_out_sine
 import random
 
+
 def test_click_at_coordinates(driver, button_box, input_box):
     x, y = button_box.center()
-    click_at_coordinates(target=(x, y),duration=random.uniform(1,3))
+    click_at_coordinates(target=(x, y), duration=random.uniform(1, 3))
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-button-1'
 
     x, y = input_box.center()
-    click_at_coordinates(target=(x, y), duration=random.uniform(1,3))
+    click_at_coordinates(target=(x, y), duration=random.uniform(1, 3))
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-input'
 
+
 def test_click_with_bezier_linear(driver, button_box, input_box):
     x, y = button_box.center()
-    click_with_bezier(target=(x, y), duration=random.uniform(1,3), steps=random.randint(100,300), easing_func=linear)
+    click_with_bezier(target=(x, y), duration=random.uniform(1, 3), steps=random.randint(100, 300), easing_func=linear)
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-button-1'
 
     time.sleep(0.5)
     x, y = input_box.center()
-    click_with_bezier(target=(x, y), duration=random.uniform(1,3), steps=random.randint(100,300), easing_func=linear)
+    click_with_bezier(target=(x, y), duration=random.uniform(1, 3), steps=random.randint(100, 300), easing_func=linear)
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-input'
 
+
 def test_click_with_bezier_ease_in_out_sine(driver, button_box, input_box):
     x, y = button_box.center()
-    click_with_bezier(target=(x, y), duration=random.uniform(1,3), steps=random.randint(100,300), easing_func=ease_in_out_sine)
+    click_with_bezier(target=(x, y), duration=random.uniform(1, 3), steps=random.randint(100, 300),
+                      easing_func=ease_in_out_sine)
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-button-1'
 
     x, y = input_box.center()
-    click_with_bezier(target=(x, y), duration=random.uniform(1,3), steps=random.randint(100,300), easing_func=ease_in_out_sine)
+    click_with_bezier(target=(x, y), duration=random.uniform(1, 3), steps=random.randint(100, 300),
+                      easing_func=ease_in_out_sine)
     last_clicked = driver.execute_script("return window.lastClickedElement;")
     assert last_clicked == 'test-input'
+
+
 def test_click_image(driver):
     clicked = click_image('test_button.png',
                           region=None,

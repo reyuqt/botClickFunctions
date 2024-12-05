@@ -90,11 +90,11 @@ def generate_cubic_bezier_curve(
 def click_with_bezier(
         target: Tuple[int, int],
         duration: float = 1,
-        steps: int = 200,
+        steps: int = 100,
         easing_func: Callable[[float], float] = linear,
-        variation: float = 0.1,
-        pause_chance: float = 0.005,  # .5% chance to pause at any step
-        pause_duration: float = 0.05  # Pause duration in seconds
+        variation: float = 0.3,
+        pause_chance: float = 0.05,  # 5% chance to pause at any step
+        pause_duration: float = 0.1  # Pause duration in seconds
 ):
     """
     Moves the mouse to the target using a Bezier curve and clicks.
@@ -133,6 +133,10 @@ def click_with_bezier(
             control2_y_lower = min(start.y, target[1]) + adjusted_offset
             control2_y_upper = max(start.y, target[1])
 
+            # Ensure that upper bounds are not less than lower bounds
+            control1_y_upper = max(control1_y_upper, control1_y_lower)
+            control2_y_upper = max(control2_y_upper, control2_y_lower)
+
         # Generate two control points for the curve
         control1 = (
             random.randint(round(min(start.x, target[0])), round(max(start.x, target[0]))),
@@ -147,19 +151,30 @@ def click_with_bezier(
         # Generate points along the cubic Bezier curve with easing
         bezier_points = generate_cubic_bezier_curve(start, control1, control2, target, steps, easing_func)
 
+        # @TODO Add positional jitter to make movement less predictable
+
         # Calculate variable delays between steps
         delays = calculate_variable_delays(duration, steps, variation=variation)
         logger.info(f"Moving mouse along Bezier curve with {steps} steps, total duration {duration} seconds.")
 
+        # Debug logs to verify lengths
+        logger.debug(f"Number of bezier points: {len(bezier_points)}")
+        logger.debug(f"Number of delays: {len(delays)}")
+
         # Move the mouse through the generated points with variable delays and possible pauses
-        for idx, point in enumerate(bezier_points):
+        # Pair each point except the last with a corresponding delay
+        for point, delay in zip(bezier_points[:-1], delays):
             pyautogui.moveTo(point[0], point[1], duration=0)
-            time.sleep(delays[idx])
+            time.sleep(delay)
 
             # Introduce a random pause
             if random.random() < pause_chance:
-                logger.debug(f"Pausing for {pause_duration} seconds at step {idx}.")
+                logger.debug(f"Pausing for {pause_duration} seconds at position ({point[0]}, {point[1]}).")
                 time.sleep(pause_duration)
+
+        # Move to the final point without delay
+        final_point = bezier_points[-1]
+        pyautogui.moveTo(final_point[0], final_point[1], duration=0)
 
         # Click at the target
         pyautogui.click(target[0], target[1])

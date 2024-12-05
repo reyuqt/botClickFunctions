@@ -1,24 +1,12 @@
-import time
-
-from selenium import webdriver
-import pytest
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-import os
-from webdriver_click_functions.selenium.click import get_element, click_this_element, save_element, click_inside_this_element
-
-
-@pytest.fixture(scope="module")
-def driver():
-    driver = webdriver.Chrome()
-    driver.get(f"file://{os.getcwd()}/test.html")
-    yield driver
-    driver.quit()
+from webdriver_click_functions.selenium.click import get_element, click_this_element, save_element, \
+    click_inside_this_element
 
 
 def test_get_element(driver):
     button = get_element(driver, (By.ID, 'test-button-1'))
     assert button is not None
+
 
 def test_save_element(driver):
     selectors_to_test = [(By.ID, 'test-button-1')]
@@ -26,6 +14,7 @@ def test_save_element(driver):
         element = driver.find_element(*selector)
         file_path = save_element(element, name='test-button-1')
         assert 'test-button-1' in file_path
+
 
 def test_click_this_element(driver):
     selectors_to_test = [(By.ID, 'test-button-1')]

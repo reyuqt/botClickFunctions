@@ -32,6 +32,9 @@ def outline_element(driver: WebDriver, selector: Union[tuple[str, str], WebEleme
         f"arguments[0].style.border='{border_width} solid {border_color}';", element
     )
 
+def scroll_to_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement]):
+    """ @TODO handle elements that arent on screen yet """
+    pass
 
 def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement], timeout: int = 10) -> WebElement:
     """
@@ -41,7 +44,7 @@ def get_element(driver: WebDriver, selector: Union[tuple[str, str], WebElement],
     if isinstance(selector, tuple):
         logger.debug(f'Resolving selector tuple: {selector}')
         return WebDriverWait(driver, timeout).until(
-            EC.element_to_be_clickable(*selector)
+            EC.element_to_be_clickable(selector)
         )
     logger.debug(f'Selector is already a WebElement')
     return selector

@@ -175,18 +175,18 @@ def ease_in_out_circ(t: float) -> float:
 """ BACK """
 
 
-def ease_in_back(t: float, overshoot: float = 1.70158) -> float:
+def ease_in_back(t: float, overshoot: float = 0.70158) -> float:
     """Ease-in back easing function with customizable overshoot."""
     return t ** 3 - t * overshoot
 
 
-def ease_out_back(t: float, overshoot: float = 1.70158) -> float:
+def ease_out_back(t: float, overshoot: float = 0.70158) -> float:
     """Ease-out back easing function with customizable overshoot."""
     t -= 1
     return t ** 3 + t * overshoot + 1
 
 
-def ease_in_out_back(t: float, overshoot: float = 1.70158) -> float:
+def ease_in_out_back(t: float, overshoot: float = 0.70158) -> float:
     """Ease-in-out back easing function with customizable overshoot."""
     s = overshoot * 1.525
     if t < 0.5:
@@ -265,3 +265,38 @@ def custom_easing(t: float) -> float:
     if t < 0.5:
         return 2 * t * t
     return t
+
+
+EASING_FUNCTIONS = {
+    "linear": linear,
+    "ease_in_quad": ease_in_quad,
+    "ease_out_quad": ease_out_quad,
+    "ease_in_out_quad": ease_in_out_quad,
+    "ease_in_cubic": ease_in_cubic,
+    "ease_out_cubic": ease_out_cubic,
+    "ease_in_out_cubic": ease_in_out_cubic,
+    "ease_in_quart": ease_in_quart,
+    "ease_out_quart": ease_out_quart,
+    "ease_in_out_quart": ease_in_out_quart,
+    "ease_in_quint": ease_in_quint,
+    "ease_out_quint": ease_out_quint,
+    "ease_in_out_quint": ease_in_out_quint,
+    "ease_in_sine": ease_in_sine,
+    "ease_out_sine": ease_out_sine,
+    "ease_in_out_sine": ease_in_out_sine,
+    "ease_in_expo": ease_in_expo,
+    "ease_out_expo": ease_out_expo,
+    "ease_in_out_expo": ease_in_out_expo,
+    "ease_in_circ": ease_in_circ,
+    "ease_out_circ": ease_out_circ,
+    "ease_in_out_circ": ease_in_out_circ,
+    "ease_in_back": ease_in_back,
+    "ease_out_back": ease_out_back,
+    "ease_in_out_back": ease_in_out_back,
+    "ease_in_elastic": ease_in_elastic,
+    "ease_out_elastic": ease_out_elastic,
+    "ease_in_out_elastic": ease_in_out_elastic,
+    "ease_in_bounce": ease_in_bounce,
+    "ease_out_bounce": ease_out_bounce,
+    "ease_in_out_bounce": ease_in_out_bounce,
+}

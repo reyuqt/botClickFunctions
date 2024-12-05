@@ -154,6 +154,7 @@ def ease_in_out_circ(t: float) -> float:
 
 """ BACK """
 
+
 def ease_in_back(t: float, overshoot: float = 1.70158) -> float:
     """Ease-in back easing function with customizable overshoot."""
     return t ** 3 - t * overshoot
@@ -172,6 +173,32 @@ def ease_in_out_back(t: float, overshoot: float = 1.70158) -> float:
         return (2 * t) ** 2 * ((s + 1) * 2 * t - s) / 2
     t = 2 * t - 2
     return (t ** 2 * ((s + 1) * t + s) + 2) / 2
+
+
+""" ELASTIC """
+
+
+def ease_in_elastic(t: float) -> float:
+    """Ease-in elastic easing function."""
+    return math.sin(13 * math.pi / 2 * t) * 2 ** (10 * (t - 1))
+
+
+def ease_out_elastic(t: float) -> float:
+    """Ease-out elastic easing function."""
+    return math.sin(-13 * math.pi / 2 * (t + 1)) * 2 ** (-10 * t) + 1
+
+
+def ease_in_out_elastic(t: float) -> float:
+    """Ease-in-out elastic easing function."""
+    if t == 0:
+        return 0
+    if t == 1:
+        return 1
+    t = t * 2
+    if t < 1:
+        return 0.5 * math.sin(13 * math.pi / 2 * (t)) * 2 ** (10 * (t - 1))
+    t -= 1
+    return 0.5 * (math.sin(-13 * math.pi / 2 * (t)) * 2 ** (-10 * t) + 2)
 
 
 def ease_in_quad(t: float) -> float:

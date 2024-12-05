@@ -1,6 +1,8 @@
 import logging
 import os
 import math
+import random
+from time import sleep
 from typing import Tuple
 from pathlib import Path
 
@@ -43,6 +45,10 @@ def get_logger(name=__name__, log_level=logging.INFO, log_file=None):
 
 
 logger = get_logger("click_helper")
+
+
+def human_delay(min_sleep: float, max_sleep: float):
+    sleep(random.uniform(min_sleep, max_sleep))
 
 
 def retry(times: int, exceptions: tuple[type(Exception)] = (Exception,)):
@@ -111,4 +117,3 @@ def calculate_human_duration_range(
 
     # Return the clamped values
     return round(scaled_min_dur, 2), round(scaled_max_dur, 2)
-

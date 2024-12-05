@@ -64,7 +64,11 @@ coordinates, enhancing automation scripts with more natural movements.
     duration_range=(1, 3), # Duration range for the click action
     steps_range=(150, 300) # Number of steps for mouse movement
     )```
+## Features
+### EASING
+![linear.png](visualizations%2Flinear.png)
 
+![ease_in_back.png](visualizations%2Fease_in_back.png)
 ## Project Structure
 
 The project is organized as follows:

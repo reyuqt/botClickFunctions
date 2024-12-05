@@ -5,7 +5,7 @@ from selenium import webdriver
 import pytest
 from selenium.webdriver.common.by import By
 import os
-
+from webdriver_click_functions.utils import get_project_root
 from webdriver_click_functions.box import Box
 from webdriver_click_functions.mouse import locate_image
 from webdriver_click_functions.selenium.click import save_element
@@ -14,7 +14,7 @@ from webdriver_click_functions.selenium.click import save_element
 @pytest.fixture(scope="module")
 def driver():
     driver = webdriver.Chrome()
-    driver.get(f"file://{os.getcwd()}/test.html")
+    driver.get(f"file://{get_project_root}/tests/test.html")
     driver.maximize_window()
     save_element(driver.find_element(By.ID, 'test-button-1'), name='test_button')
     save_element(driver.find_element(By.ID, 'test-input'), name='test_input')

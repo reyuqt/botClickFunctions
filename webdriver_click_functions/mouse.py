@@ -25,9 +25,41 @@ MOUSE_MOVEMENTS = [
     pyautogui.easeInElastic,
     pyautogui.easeInBounce,
 ]
+
+
 def ease_in_out_sine(t: float) -> float:
     """Ease-in-out sine function."""
     return -(math.cos(math.pi * t) - 1) / 2
+
+def linear(t: float) -> float:
+    """Linear easing function."""
+    return t
+
+def calculate_variable_delays(duration: float, steps: int, variation: float = 0.1) -> List[float]:
+    """
+    Calculate delays with slight random variations.
+
+    Parameters:
+        duration: Total duration in seconds.
+        steps: Number of steps.
+        variation: Maximum variation as a fraction of base delay.
+
+    Returns:
+        List of delay times for each step.
+    """
+    base_delay = duration / steps
+    delays = []
+    total = 0
+    for _ in range(steps+1):
+        # Variation between -variation to +variation of the base_delay
+        var = base_delay * variation
+        delay = random.uniform(base_delay - var, base_delay + var)
+        delays.append(delay)
+        total += delay
+    # Adjust delays to match the total duration
+    scaling_factor = duration / total
+    scaled_delays = [d * scaling_factor for d in delays]
+    return scaled_delays
 
 def generate_cubic_bezier_curve(
         p0: Tuple[int, int],
@@ -35,7 +67,7 @@ def generate_cubic_bezier_curve(
         p2: Tuple[int, int],
         p3: Tuple[int, int],
         steps: int,
-        easing_func: Callable[[float], float] = lambda t: t  # Linear by default
+        easing_func: Callable[[float], float] = linear
 ) -> List[Tuple[int, int]]:
     """
     Generate points along a cubic Bezier curve with optional easing.
@@ -60,16 +92,16 @@ def generate_cubic_bezier_curve(
         t = i / steps
         eased_t = easing_func(t)
         x = (
-            (1 - eased_t) ** 3 * p0[0]
-            + 3 * (1 - eased_t) ** 2 * eased_t * p1[0]
-            + 3 * (1 - eased_t) * eased_t ** 2 * p2[0]
-            + eased_t ** 3 * p3[0]
+                (1 - eased_t) ** 3 * p0[0]
+                + 3 * (1 - eased_t) ** 2 * eased_t * p1[0]
+                + 3 * (1 - eased_t) * eased_t ** 2 * p2[0]
+                + eased_t ** 3 * p3[0]
         )
         y = (
-            (1 - eased_t) ** 3 * p0[1]
-            + 3 * (1 - eased_t) ** 2 * eased_t * p1[1]
-            + 3 * (1 - eased_t) * eased_t ** 2 * p2[1]
-            + eased_t ** 3 * p3[1]
+                (1 - eased_t) ** 3 * p0[1]
+                + 3 * (1 - eased_t) ** 2 * eased_t * p1[1]
+                + 3 * (1 - eased_t) * eased_t ** 2 * p2[1]
+                + eased_t ** 3 * p3[1]
         )
         points.append((int(x), int(y)))
     logger.debug(f"Generated {len(points)} points along the curve.")
@@ -79,8 +111,11 @@ def generate_cubic_bezier_curve(
 def click_with_bezier(
         target: Tuple[int, int],
         duration: float = 1,
-        steps: int = 100,
-        easing_func: Callable[[float], float] = ease_in_out_sine,
+        steps: int = 200,
+        easing_func: Callable[[float], float] = linear,
+        variation: float = 0.1,
+        pause_chance: float = 0.005,  # .5% chance to pause at any step
+        pause_duration: float = 0.05  # Pause duration in seconds
 ):
     """
     Moves the mouse to the target using a Bezier curve and clicks.
@@ -89,6 +124,10 @@ def click_with_bezier(
         target: Tuple of (x, y) specifying the target coordinates.
         duration: Total time in seconds to complete the movement.
         steps: Number of steps for the movement (higher = smoother).
+        easing_func: Function to adjust t for easing.
+        variation: Maximum variation for delays as a fraction of base delay.
+        pause_chance: Probability of pausing at any step.
+        pause_duration: Duration of the pause in seconds.
     """
     try:
         # Get the current position of the mouse
@@ -126,17 +165,22 @@ def click_with_bezier(
         )
         logger.info(f"Generated control points: control1={control1}, control2={control2}")
 
-        # Generate points along the cubic Bezier curve
+        # Generate points along the cubic Bezier curve with easing
         bezier_points = generate_cubic_bezier_curve(start, control1, control2, target, steps, easing_func)
 
-        # Calculate delay between steps
-        delay = duration / steps
+        # Calculate variable delays between steps
+        delays = calculate_variable_delays(duration, steps, variation=variation)
         logger.info(f"Moving mouse along Bezier curve with {steps} steps, total duration {duration} seconds.")
 
-        # Move the mouse through the generated points
-        for point in bezier_points:
+        # Move the mouse through the generated points with variable delays and possible pauses
+        for idx, point in enumerate(bezier_points):
             pyautogui.moveTo(point[0], point[1], duration=0)
-            time.sleep(delay)
+            time.sleep(delays[idx])
+
+            # Introduce a random pause
+            if random.random() < pause_chance:
+                logger.debug(f"Pausing for {pause_duration} seconds at step {idx}.")
+                time.sleep(pause_duration)
 
         # Click at the target
         pyautogui.click(target[0], target[1])
@@ -144,7 +188,6 @@ def click_with_bezier(
 
     except Exception as e:
         logger.error(f"An error occurred during the Bezier mouse movement: {e}", exc_info=True)
-
 
 
 def click_at_coordinates(target: Tuple[int, int], duration: float = 1):
@@ -173,7 +216,8 @@ def click_image(
         y_reduction: float = 0.2,
         duration_range: Tuple[float, float] = (1, 3),
         steps_range: Tuple[int, int] = (150, 300),
-        bezier: bool = True
+        bezier: bool = True,
+        easing_func: Callable[[float], float] = linear
 ) -> bool:
     """
     Locate an image on the screen and click within it.
@@ -192,7 +236,7 @@ def click_image(
         duration = random.uniform(*duration_range)
         steps = int(random.uniform(*steps_range))
         if bezier:
-            click_with_bezier((x, y), duration=duration, steps=steps)
+            click_with_bezier((x, y), duration=duration, steps=steps, easing_func=easing_func)
         else:
             click_at_coordinates(x, duration=duration)
         logger.info(f"Clicked on image at ({x}, {y}) with duration {duration:.2f} seconds")

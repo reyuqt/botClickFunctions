@@ -3,7 +3,7 @@ import re
 from typing import List
 
 
-def get_folder_structure_os(path: str, ignore_patterns: List[str] = None) -> str:
+def get_folder_structure_os(path: str, ignore_patterns: List[str] = ['node_modules', '.git', '.idea', 'pycache']) -> str:
     """
     Returns the folder structure of the given path as a string using the os module,
     while ignoring directories that match any of the provided regex patterns.
